@@ -4,108 +4,56 @@ Simplied angular unit test api
 
 ## Controllers
 
-### The Code
+### A simple controller
+The following is a very simple controller that takes a single dependency and assigns it to the view model (vm).
 ```javascript
-(function () {
+    (function () {
+        angular.module('v.person.simple', [])
+		    .controller('person', PersonController);
 
-    angular.module('v.person', ['v.common.logging'])
-		.controller('person', PersonController);
-
-    PersonResolver.$inject = ['personDataService'];
-    function PersonResolver(personDataService) {
-        return personDataService.get();
-    }
-
-    /**
-     * The person controller
-     */
-    PersonController.$inject = ['loggingService', 'personDataService', 'personData'];
-    function PersonController(loggingService, personDataService, personData) {
-        var vm = this,
-            logger = loggingService.logger('person');
-        vm.save = save;
-        vm.isSaving = false;
-        vm.person = personData;
-        logger.debug('activated', vm.person);
-
-        function save() {
-            vm.isSaving = true;
-            personDataService.save(vm.person)
-                .then(postSave);
+        PersonController.$inject = ['personData'];
+        function PersonController(personData) {
+            var vm = this;
+            vm.person = personData;
         }
+    })();
 
-        function postSave() {
-            vm.isSaving = false;
-        }
-    }
-})();
 ```
 
+This is then tested with the following spec file.
 
-### The Tests
 ```javascript
-(function() {
-    var
-        loggingService = (function() {
-            var debugStub = sinon.stub();
+1    var
+2        personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
+3        controller;
+4
+5    _T.addModule('v.person.simple')
+6        .describe(function() {
+7            this.addController('person')
+8                .controllerAs('vm')
+9                .inject({
+10                    'personData': personData
+11               })
+12                .describe(function() {
+13                    controller = this;
+14
+15                    it('Should contain the person data', function() {
+16                        controller.scope.vm.person
+17                           .should.be.equal(personData);
+18                    });
+19                });
+20        });
+```
 
-            return {
-                logger: function() {
-                    return {
-                        debug: debugStub
-                    };
-                }
-            };
-        })(),
-        personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
-        personDataService = {
-            save: sinon.stub().returnsPromise()
-        },
-        controller,
-        vm;
+The main object is _T, and line 5 defines the angular module to be tested.  Line 6 then defines the describe block to be tested for the module and passes into it's function the test module.
 
-    _T.addModule('v.person')
-        .inject(['v.common.logging'])
-        .describe(function() {
-            this.addController('person')
-                .controllerAs('vm')
-                .inject({
-                    'loggingService': loggingService,
-                    'personData': personData,
-                    'personDataService': personDataService
-                })
-                .describe(function() {
-                    controller = this;
-                    beforeEach(function() { vm = controller.scope.vm; });
+The Module has the following API
+```
+<dl>
+  <dt>"Module" API</dt>
+  <dd>The module under test object.</dd>
 
-                    it('Should debug log the person model on activation', function() {
-                        loggingService.logger().debug
-                            .should.be.calledWith('activated', personData);
-                    });
-
-                    describe('On save attempt', function() {
-                        beforeEach(function() {
-                            vm.save();
-                        });
-                        it('Should display "saving.." message', function() {
-                            vm.isSaving.should.be.true;
-                        });
-                        it('Should save the person', function() {
-                            personDataService.save
-                                .should.be.calledWith(personData);
-                        });
-                    });
-
-                    describe('On save success', function() {
-                        beforeEach(function() {
-                            personDataService.save.resolves();
-                            vm.save();
-                        });
-                        it('Should hide the "saving..." message', function() {
-                            vm.isSaving.should.be.false;
-                        });
-                    });
-                });
-        });
-})();
+  <dt>addController</dt>
+  <dd>controller = module.addController('person')</dd>
+</dl>
 ```
