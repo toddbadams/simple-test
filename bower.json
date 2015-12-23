@@ -1,0 +1,27 @@
+{
+  "name": "simple-tests",
+  "description": "Simplified angular unit test API",
+  "main": "",
+  "authors": [
+    "Todd B. Adams <toddbadams@msn.com>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.8",
+    "angular-mocks": "~1.4.8",
+    "mocha": "~2.3.4",
+    "chai": "~3.4.2",
+    "sinon": "http://sinonjs.org/releases/sinon-1.9.0.js",
+    "sinon-chai": "https://github.com/domenic/sinon-chai.git"
+  }
+}
