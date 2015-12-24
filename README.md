@@ -131,7 +131,7 @@ The **Simple Test** framework has been written to follow [John Papa's Angular St
 	                .describe(function () {
 	                    this.createMethod('get', [personId])
 	                        .backend('/api/person', personPromise)
-	                        .it('get the person data', function () {
+	                        .it('should get the person data', function () {
 	                            this.result.should.be.equal(personData);
 	                        });
 	                });
