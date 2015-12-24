@@ -25,18 +25,19 @@ var
     personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
     personId = 1,
     personPromise = sinon.stub().returnsPromise().resolves(personData),
-    factory,
-    result;
+    method;
 
 _T.createModule('app.people.person')
         .describe(function () {
-            this.addFactory('personDataService')
-                .backend('/api/person', personPromise)
-                .method('get', [personId], result)
+            this.createFactory('personDataService')
                 .describe(function () {
-                    factory = this;
-                    it('Should get the person data', function () {
-                        result.should.be.equal(personData);
-                    });
+                    this.createMethod('get', [personId])
+                        .backend('/api/person', personPromise)
+                        .describe(function () {
+                            method = this;
+                            it('Should get the person data', function () {
+                                method.result.should.be.equal(personData);
+                            });
+                        });
                 });
         });

@@ -23,7 +23,7 @@ describe('app.people.person Module', function () {
     describe('personController Controller', function () {
         beforeEach(function () {
             $scope = $rootScope.$new();
-            angularController = $controller('personController');
+            angularController = $controller('personController', { 'personData': personData });
             $scope.vm = angularController;
         });
         it('Should have a scope', function () {
