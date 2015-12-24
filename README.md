@@ -115,9 +115,16 @@ describe('app.people.person Module', function () {
 ```
 
 ### Enforces Code Standards
-The **Simple Test** framework has been written to follow [John Papa's Angular Style Guide](https://github.com/johnpapa/angular-styleguide "https://github.com/johnpapa/angular-styleguide"). This is an opinionated style guide for syntax, conventions, and structuring Angular applications.  **Simple Test** follows these conventions in setting out it's testing methods, for example there is a method `.backend('/api/person', personData)` that allows mocking a backend response.  While technically a developer can place a backend call withing a directive or controller, the style guide calls for the logic to reside in an angular factory [Style [Y060](https://github.com/johnpapa/angular-styleguide#style-y060)]. Therefore the `.backend('/api/person', personData)` is only avialble to test on the **Simple Test** `Factory` object, as shown in the following code example.
+The **Simple Test** framework has been written to follow [John Papa's Angular Style Guide](https://github.com/johnpapa/angular-styleguide "https://github.com/johnpapa/angular-styleguide"). This is an opinionated style guide for syntax, conventions, and structuring Angular applications.  **Simple Test** follows these conventions in setting out it's testing methods. For example, there is a method `.backend('/api/person', personData)` that allows mocking a backend response.  While technically a developer can place a backend call withing a directive or controller, the style guide calls for the logic to reside in an angular factory [Style [Y060](https://github.com/johnpapa/angular-styleguide#style-y060)]. Therefore the `.backend('/api/person', personData)` is only avialble to test on the **Simple Test** `Factory` object, as shown in the following code example.
 
 ```javascript
+
+	var
+	    personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
+	    personId = 1,
+	    personPromise = sinon.stub().returnsPromise().resolves(personData),
+	    method;
+	
 
 	var
 	    personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
@@ -131,12 +138,9 @@ The **Simple Test** framework has been written to follow [John Papa's Angular St
 	                .describe(function () {
 	                    this.createMethod('get', [personId])
 	                        .backend('/api/person', personPromise)
-	                        .describe(function () {
-	                            method = this;
-	                            it('Should get the person data', function () {
-	                                method.result.should.be.equal(personData);
-	                            });
-	                        });
+	                        .it(function () {
+	                            this.result.should.be.equal(personData);
+	                        }, 'get the person data');
 	                });
 	        });
 
