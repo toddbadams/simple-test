@@ -33,8 +33,8 @@ _T.createModule('app.people.person')
                 .describe(function () {
                     this.createMethod('get', [personId])
                         .backend('/api/person', personPromise)
-                        .it(function () {
+                        .it('get the person data', function () {
                             this.result.should.be.equal(personData);
-                        }, 'get the person data');
+                        });
                 });
         });

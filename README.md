@@ -125,22 +125,15 @@ The **Simple Test** framework has been written to follow [John Papa's Angular St
 	    personPromise = sinon.stub().returnsPromise().resolves(personData),
 	    method;
 	
-
-	var
-	    personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
-	    personId = 1,
-	    personPromise = sinon.stub().returnsPromise().resolves(personData),
-	    method;
-	
 	_T.createModule('app.people.person')
 	        .describe(function () {
 	            this.createFactory('personDataService')
 	                .describe(function () {
 	                    this.createMethod('get', [personId])
 	                        .backend('/api/person', personPromise)
-	                        .it(function () {
+	                        .it('get the person data', function () {
 	                            this.result.should.be.equal(personData);
-	                        }, 'get the person data');
+	                        });
 	                });
 	        });
 
