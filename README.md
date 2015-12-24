@@ -1,5 +1,5 @@
 # simple-test
-Simplied angular unit testing. 
+**Simple Test provides simplied angular unit testing is a work in progress.  Coming soon...**
 
 
 
@@ -68,6 +68,8 @@ This is then tested with the following .spec.js file.
 
 ##Why?
 
+###Saves Time
+
 **Simple Test** reduces the amount of code required to unit test (and time)!  The simple example without **Simple Test** is shown below.  The unit test code has reduced by over 40%, and this is for a very simple controller without dependencies.  In a typcial application, this substantially reduces the amount of time spent writing unit tests.
 
 ```javascript
@@ -79,7 +81,6 @@ This is then tested with the following .spec.js file.
     $rootScope,
     angularController,
     $scope;
-
 
 	describe('app.people.person Module', function () {
 	    beforeEach(function () {
@@ -105,13 +106,40 @@ This is then tested with the following .spec.js file.
 	            $scope.should.exist;
 	        });
 	        it('Should contain the person data', function () {
-	            $scope.vm.person
-	                .should.be.equal(personData);
+	            $scope.vm.person.should.equal(personData);
 	        });
 	    });
 	});
 
 ```
+
+### Enforces Code Standards
+The **Simple Test** framework has been written to follow [John Papa's Angular Style Guide](https://github.com/johnpapa/angular-styleguide "https://github.com/johnpapa/angular-styleguide"). This is an opinionated style guide for syntax, conventions, and structuring Angular applications.  **Simple Test** follows these conventions in setting out it's testing methods, for example there is a method `.backend('/api/person', personData)` that allows mocking a backend response.  While technically a developer can place a backend call withing a directive or controller, the style guide calls for the logic to reside in an angular factory [Style [Y060](https://github.com/johnpapa/angular-styleguide#style-y060)]. Therefore the `.backend('/api/person', personData)` is only avialble to test on the **Simple Test** `Factory` object, as shown in the following code example.
+
+```javascript
+
+	var
+	    personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
+	    personId = 1,
+	    personPromise = sinon.stub().returnsPromise().resolves(personData),
+	    factory,
+	    result;
+	
+	_T.createModule('app.people.person')
+	        .describe(function () {
+	            this.addFactory('personDataService')
+	                .backend('/api/person', personPromise)
+	                .method('get', [personId], result)
+	                .describe(function () {
+	                    factory = this;
+	                    it('Should get the person data', function () {
+	                        result.should.be.equal(personData);
+	                    });
+	                });
+	        });
+
+```
+
 
 ## API
 
