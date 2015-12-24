@@ -118,6 +118,13 @@
             this.controllers = {};
             this.directives = {};
             this.angularModule = null;
+            this.$injector = null;
+            this.$compile = null;
+            this.$controller = null;
+            this.$rootScope = null;
+            this.$httpBackend = null;
+            this.$q = null;
+            this.$log = null;
             testsMixin(this);
             dependenciesMixin(this);
             return this;

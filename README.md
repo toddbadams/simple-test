@@ -1,13 +1,31 @@
 # simple-test
-Simplied angular unit test api
+Simplied angular unit testing .
+
+## Installation
+
+via [http://bower.io/](http://bower.io/ "Bower")
 
 
-## Controllers
+```
 
-### A simple controller
+	tbd
+
+```
+
+This provides `_T` as a global object, and loads the following requirements:
+
+- [https://github.com/angular/bower-angular.js](https://github.com/angular/bower-angular.js "Angular")
+- [https://github.com/angular/bower-angular-mocks](https://github.com/angular/bower-angular-mocks "Angular Mocks") - provides support to inject and mock Angular services
+- [https://github.com/mochajs/mocha](https://github.com/mochajs/mocha "mocha") - a Javascript test framework
+- [https://github.com/chaijs/chai](https://github.com/chaijs/chai "chai") - a BDD/TDD assertion framework 
+- [https://github.com/sinonjs/sinon](https://github.com/sinonjs/sinon "sinon") - Javascript test spies, stubs and mocks
+- [https://github.com/domenic/sinon-chai](https://github.com/domenic/sinon-chai "sinon-chai") - Extends chai with assertions for the sinon
+
+## A Simple Example
 The following is a very simple controller that takes a single dependency and assigns it to the view model (vm).
+
 ```javascript
-    (function () {
+
         angular.module('v.person.simple', [])
 		    .controller('person', PersonController);
 
@@ -16,44 +34,36 @@ The following is a very simple controller that takes a single dependency and ass
             var vm = this;
             vm.person = personData;
         }
-    })();
 
 ```
 
-This is then tested with the following spec file.
+This is then tested with the following .spec.js file.
+
 
 ```javascript
-1    var
-2        personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
-3        controller;
-4
-5    _T.addModule('v.person.simple')
-6        .describe(function() {
-7            this.addController('person')
-8                .controllerAs('vm')
-9                .inject({
-10                    'personData': personData
-11               })
-12                .describe(function() {
-13                    controller = this;
-14
-15                    it('Should contain the person data', function() {
-16                        controller.scope.vm.person
-17                           .should.be.equal(personData);
-18                    });
-19                });
-20        });
+
+    var
+        personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
+        controller;
+    
+    _T.createModule('app.people.person')
+            .describe(function() {
+                this.addController('personController')
+                    .controllerAs('vm')
+                    .inject({
+                        'personData': personData
+                    })
+                    .describe(function () {
+                        controller = this;
+                        it('Should contain the person data', function() {
+                            controller.scope.vm.person
+                                .should.be.equal(personData);
+                        });
+                    });
+            });
+
 ```
 
-The main object is _T, and line 5 defines the angular module to be tested.  Line 6 then defines the describe block to be tested for the module and passes into it's function the test module.
+## API
 
-The Module has the following API
-```
-<dl>
-  <dt>"Module" API</dt>
-  <dd>The module under test object.</dd>
-
-  <dt>addController</dt>
-  <dd>controller = module.addController('person')</dd>
-</dl>
-```
+For more information view the [documentation](https://github.com/toddbadams/simple-test/wiki "https://github.com/toddbadams/simple-test/wiki").

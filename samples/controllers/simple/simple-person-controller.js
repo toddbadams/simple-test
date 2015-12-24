@@ -1,5 +1,5 @@
 ﻿(function () {
-    angular.module('v.person.simple', [])
+    angular.module('app.people', [])
 		.controller('person', PersonController);
 
     PersonController.$inject = ['personData'];
