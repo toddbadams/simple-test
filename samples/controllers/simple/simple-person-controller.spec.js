@@ -3,7 +3,7 @@
         personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
         controller;
     
-    _T.createModule('app.people')
+    _T.createModule('app.people.person')
             .describe(function() {
                 this.addController('personController')
                     .controllerAs('vm')
