@@ -46,19 +46,19 @@ This is then tested with the following .spec.js file.
 
     var
         personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
-        controller;
+        controllerTest;
     
-    _T.createModule('app.people.person')
+    _T.createModuleTest('app.people.person')
             .describe(function() {
-                this.addController('personController')
+                this.createControllerTest('personController')
                     .controllerAs('vm')
                     .inject({
                         'personData': personData
                     })
                     .describe(function () {
-                        controller = this;
+                        controllerTest = this;
                         it('Should contain the person data', function() {
-                            controller.scope.vm.person
+                            controllerTest.scope.vm.person
                                 .should.be.equal(personData);
                         });
                     });
@@ -122,14 +122,13 @@ The **Simple Test** framework has been written to follow [John Papa's Angular St
 	var
 	    personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
 	    personId = 1,
-	    personPromise = sinon.stub().returnsPromise().resolves(personData),
-	    method;
+	    personPromise = sinon.stub().returnsPromise().resolves(personData);
 	
 	_T.createModule('app.people.person')
 	        .describe(function () {
-	            this.createFactory('personDataService')
+	            this.createFactoryTest('personDataService')
 	                .describe(function () {
-	                    this.createMethod('get', [personId])
+	                    this.createMethodTest('get', [personId])
 	                        .backend('/api/person', personPromise)
 	                        .it('should get the person data', function () {
 	                            this.result.should.be.equal(personData);
