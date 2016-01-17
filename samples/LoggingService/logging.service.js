@@ -1,7 +1,7 @@
 (function () {
     var ENABLE_DEBUG = true;
 
-    angular.module('v.common.logging', ['ng'])
+    angular.module('s.logging', ['ng'])
         .config(config)
 		.factory('loggingService', loggingService);
 
