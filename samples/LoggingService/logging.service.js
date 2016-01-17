@@ -1,14 +1,14 @@
 (function () {
-    var ENABLE_DEBUG = true;
 
     angular.module('s.logging', ['ng'])
         .config(config)
+        .constant('loggingDebugEnabled', true)
 		.factory('loggingService', loggingService);
 
 
-    config.$inject = ['$logProvider'];
-    function config($logProvider) {
-        $logProvider.debugEnabled(ENABLE_DEBUG);
+    config.$inject = ['$logProvider', 'loggingDebugEnabled'];
+    function config($logProvider, loggingDebugEnabled) {
+        $logProvider.debugEnabled(loggingDebugEnabled);
     }
 
     /**

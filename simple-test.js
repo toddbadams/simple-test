@@ -8,41 +8,19 @@
  *  angular, angular mocks  https://angularjs.org/
  * 
  */
-(function (angular, mocha, chai, sinon) {
+(function(angular, mocha, chai, sinon) {
     "use strict";
 
     var publicApi = {
-/*        addExpected: addExpected,
-        expected: expected,
-
-        addDependantService: addDependantService,
-        dependantService: dependantService,
-
-        asPromise: asPromise,
-        dom: {
-            getChildNodesByLocalName: getChildNodesByLocalName
+            createModuleTest: function(name, title) {
+                return new ModuleTest(name, title);
+            },
+            run: run
         },
-        getHttpResponse: getHttpResponse,
-        addModule: function (name) { return new Module(name); },
-        stub: function () { return sinon.stub(); },
-
-        data: function () { return sinon.stub(); },
-        inject: {
-            services: function () { sinon.stub(); },
-            modules: function () { sinon.stub(); }
-        }
-*/
-        createModuleTest : function (name, title){ return new ModuleTest(name, title);     },
-        run: run
-    },
         expectedData = {},
         dependantServices = {};
 
-
-
     /** PRIVATE METHODS ****************************************************/
-
-
 
     function addExpected(key, obj) {
         expectedData[key] = obj;
@@ -80,12 +58,12 @@
         mocha.run();
 
         // before each spec setup common stuff
-        beforeEach(function () {
+        beforeEach(function() {
             window._T = publicApi;
         });
 
-        // and after each spec take down
-        afterEach(function () {
+        // and after each spec tear down
+        afterEach(function() {
 
         });
     }
@@ -109,13 +87,13 @@
     /**
      * The ModuleTest Object
      */
-    var ModuleTest = (function () {
+    var ModuleTest = (function() {
         /**
          * An angular module to test
          * @param {} name - the angular module name
          * @returns {} - the module test object
          */
-        var ModuleTest = function (name, title) {
+        var ModuleTest = function(name, title) {
             this.name = name;
             this.title = title || name + ' Module';
             this.services = {};
@@ -135,73 +113,42 @@
             dependenciesMixin(this);
             return this;
         }
-        ModuleTest.prototype.describe = function (test) {
-            var self = this;
-            describe(self.title, function () {
-                beforeEach(function () { setupAngularModule(self); });
-                afterEach(function () { tearDownAngularModule(self); });
-                it(self.name + ' should exist as an angular module', function () {
-                    angular.module(self.name).should.exist;
+        ModuleTest.prototype.describe = function(test) {
+                var self = this;
+                describe(self.title, function() {
+                    beforeEach(function() {
+                        setupAngularModule(self);
+                    });
+                    afterEach(function() {
+                        tearDownAngularModule(self);
+                    });
+                    it(self.name + ' should exist as an angular module', function() {
+                        angular.module(self.name).should.exist;
+                    });
+                    if (test) self.addTest(test)();
                 });
-                //if (self.constantsName) {
-                //    it('Should have a constant named ' + self.constantsName, function () {
-                //        expect(_T.currentModuleSettings).to.exist;
-                //    });
-                //}
-                //if (self.states) {
-                //    describe('UI Router States', function () {
-                //        self.states.forEach(function (element, index, array) {
-                //            uiRouterStateTest(element.name, element.state);
-                //        });
-                //    });
-                //}
-                if (test) self.addTest(test)();
-            });
-            return self;
-        }
-        //Module.prototype.constants = function (name) {
-        //    this.constantsName = name;
-        //    return this;
-        //}
-        //Module.prototype.stubs = function (stubFn) {
-        //    this.stubFn = stubFn;
-        //    return this;
-        //}
-        //Module.prototype.backend = function (data) {
-        //    this.backendData = data;
-        //    return this;
-        //}
-        //module.prototype.uiRouterStates = function (states) {
-        //    this.states = states;
-        //    return this;
-        //}
+                return self;
+            }
 
-        ModuleTest.prototype.addController = function (name, title) {
+        ModuleTest.prototype.addController = function(name, title) {
             this.controllers[name] = new Controller(this, name, title);
             return this.controllers[name];
         }
-        ModuleTest.prototype.addDirective = function (name, title) {
+        ModuleTest.prototype.addDirective = function(name, title) {
             this.directives[name] = new Directive(this, name, title);
             return this.directives[name];
         }
-        ModuleTest.prototype.createServiceTest = function (name, title) {
+        ModuleTest.prototype.createServiceTest = function(name, title) {
             this.serviceTests[name] = new ServiceTest(this, name, title);
             return this.serviceTests[name];
         }
-        //module.prototype.addServiceDependencies = function (hashMap) {
 
-        //    //self.stubNames.forEach(function (element) {
-        //    //    self.stubs[element] = _T.currentModule.stubData[element];
-        //    //    _T.currentModule.module.factory(element, function () { return self.stubs[element] });
-        //    //});
-        //    return this;
-        //}
 
         function setupAngularModule(self) {
             createDependantModules(self);
             angular.mock.module(self.name);
             self.module = angular.module(self.name);
-            inject(function ($injector) {
+            inject(function($injector) {
                 self.$injector = $injector;
                 self.$compile = $injector.get('$compile');
                 self.$controller = $injector.get('$controller');
@@ -209,27 +156,6 @@
                 self.$httpBackend = $injector.get('$httpBackend');
                 self.$q = $injector.get('$q');
                 self.$log = $injector.get('$log');
-                // if the module has dependency on ui router
-                //if ($injector.has('$state')) {
-                //    // add $state to global
-                //    self.$state = $injector.get('$state');
-                //}
-                //// if the module has constants, inject it
-                //if (self.constantsName) {
-                //    self.currentModuleSettings = $injector.get(self.constantsName);
-                //}
-                //// if we have a stubs function run it with $q
-                //if (self.stubFn) {
-                //    self.currentStubData = self.stubFn(_T.$q);
-                //    self.currentModule.stubData = _T.currentStubData;
-                //}
-                //// if backend data, inject it
-                //if (self.backendData && _T.currentStubData) {
-                //    self.backendData.forEach(function (element) {
-                //        _T.$httpBackend.whenPOST(element.url)
-                //            .respond(200, element.expected);
-                //    });
-                //}
             });
         }
 
@@ -240,7 +166,7 @@
 
         function createDependantModules(self) {
             if (!self.dependencies) return;
-            angular.forEach(self.dependencies, function (moduleName) {                
+            angular.forEach(self.dependencies, function(moduleName) {
                 self.injectedModules[moduleName] = angular.module(moduleName, []);
             });
         }
@@ -249,22 +175,20 @@
     })();
 
 
-
-
     /**
      * Test a single UI Router state
      * @param {} name - the state name
      * @param {} expected - the expected state values
      */
     function uiRouterStateTest(name, expected) {
-        describe(name + ' State', function () {
+        describe(name + ' State', function() {
             var state = null;
 
-            it('Should exist', function () {
+            it('Should exist', function() {
                 // if the module has dependency on ui router 
                 if (_T.$state) {
                     _T.$state.get()
-                        .forEach(function (element, index, array) {
+                        .forEach(function(element, index, array) {
                             if (element.name === name) {
                                 state = element;
                                 return;
@@ -274,25 +198,25 @@
                 expect(state).to.exist;
             });
             if (expected.abstract) {
-                it('Should have correct abstract value of ' + expected.abstract, function () {
+                it('Should have correct abstract value of ' + expected.abstract, function() {
                     expect(state.abstract).to.equal(expected.abstract);
                 });
             }
             if (expected.controller) {
-                it('Should have correct controller value of ' + expected.controller, function () {
+                it('Should have correct controller value of ' + expected.controller, function() {
                     expect(state.controller).to.equal(expected.controller);
                 });
             }
             if (expected.url) {
-                it('Should have correct URL value of ' + expected.url, function () {
+                it('Should have correct URL value of ' + expected.url, function() {
                     expect(state.url).to.equal(expected.url);
                 });
             }
             if (expected.templateUrl) {
-                it.skip('Should have correct templateUrl value of ' + expected.templateUrl, function () {
+                it.skip('Should have correct templateUrl value of ' + expected.templateUrl, function() {
                     state.templateUrl.toLowerCase().should.equal(expected.templateUrl.toLowerCase());
                 });
-                it.skip('Should have file located at the templateUrl value of ' + expected.templateUrl, function () {
+                it.skip('Should have file located at the templateUrl value of ' + expected.templateUrl, function() {
                     urlExists('/src' + state.templateUrl).should.be.true;
                 });
             }
@@ -312,12 +236,14 @@
             this.stubNames = stubs;
             return this;
         }
+
         function getStubs() {
             var self = this;
-            self.stubNames.forEach(function (element) {
+            self.stubNames.forEach(function(element) {
                 self.stubs[element] = _T.currentModule.stubData[element];
             });
         }
+
         function getScope() {
             this.scope = _T.$rootScope.$new();
             _T.currentScope = this.scope;
@@ -336,7 +262,7 @@
          * creates a scope from the $rootScope
          * @returns {} - self
          */
-        obj.createScope = (function () {
+        obj.createScope = (function() {
             obj.scope = obj.module.$rootScope.$new();
             // if our object has dependencies then add the scope as a dependency
             if (obj.dependencies) obj.dependencies['$scope'] = obj.scope;
@@ -356,12 +282,12 @@
          * @param {} names - an array of strings - each is the name of a dependency
          * @returns {} - self
          */
-        obj.inject = (function (dependencies) {
+        obj.inject = (function(dependencies) {
             if (!angular.isObject(dependencies)) {
                 throw new Texception('Cannot create dependencies, names must be an object.');
             }
             obj.dependencies = {};
-            angular.forEach(dependencies, function (value, key) {
+            angular.forEach(dependencies, function(value, key) {
                 obj.dependencies[key] = value;
             });
             // if our object has a scope then add it as a dependency
@@ -382,7 +308,7 @@
          * @param {} testFn - a test function
          * @returns {} - self
          */
-        obj.addTest = (function (testFn) {
+        obj.addTest = (function(testFn) {
             if (!angular.isFunction(testFn)) {
                 throw new Texception('Cannot create test, testFn must be a function.');
             }
@@ -392,14 +318,14 @@
         }).bind(obj);
     }
 
-    var Controller = (function () {
+    var ControllerTest = (function() {
 
         /**
          * An angular controller to test
          * @param {} name - the angular controller name
          * @returns {} - the controller test object
          */
-        var controller = function (module, name, title) {
+        var controller = function(module, name, title) {
             this.module = module;
             this.name = name;
             this.title = title || name + ' Controller';
@@ -409,7 +335,7 @@
             this.controllerAsName = null;
             return this;
         }
-        controller.prototype.createAngularController = function () {
+        controller.prototype.createAngularController = function() {
             var self = this;
             self.createScope();
             self.angularController = self.module.$controller(self.name, self.dependencies);
@@ -418,17 +344,17 @@
                 self.scope[self.controllerAsName] = self.angularController;
             }
         }
-        controller.prototype.controllerAs = function (name) {
+        controller.prototype.controllerAs = function(name) {
             this.controllerAsName = name;
             return this;
         }
-        controller.prototype.describe = function (test) {
+        controller.prototype.describe = function(test) {
             var self = this;
-            describe(self.title, function () {
-                beforeEach(function () {
+            describe(self.title, function() {
+                beforeEach(function() {
                     self.createAngularController();
                 });
-                it('Should have a scope', function () {
+                it('Should have a scope', function() {
                     self.scope.should.exist;
                 });
                 if (test) self.addTest(test)();
@@ -443,14 +369,14 @@
     /**
      * The ServiceTest Object
      */
-    var ServiceTest = (function () {
+    var ServiceTest = (function() {
         /**
          * An angular service or factory to test
          * @param {} module - the angular module that contains the service
          * @param {} name - the angular service or factory name
          * @returns {} - the service or factory test object
          */
-        var ServiceTest = function (moduleTest, name, title) {
+        var ServiceTest = function(moduleTest, name, title) {
             this.moduleTest = moduleTest;
             this.module = moduleTest.module;
             this.name = name;
@@ -459,48 +385,38 @@
             testsMixin(this);
             return this;
         }
-        ServiceTest.prototype.describe = function (test) {
+        ServiceTest.prototype.describe = function(test) {
             var self = this;
-            describe(self.title, function () {
-                beforeEach(function () {
-                    self.createAngularService();
+            describe(self.title, function() {
+                beforeEach(function() {
+                    createAngularService(self);
                 });
-                it('Should exist in module ' + self.moduleTest.name, function () {
-                    self.module.$injector.has(self.name).should.be.true;
+                it('Should exist in module ' + self.moduleTest.name, function() {
+                    self.moduleTest.$injector.has(self.name).should.be.true;
                 });
                 if (test) self.addTest(test)();
             });
             return this;
         }
-        ServiceTest.prototype.createAngularService = function () {
-            var self = this;
-            if (!self.moduleTest.$injector.has(self.name)) {
-                throw new Texception('Cannot create service, it does not exist within the ' + module.name + ' module.');
-            };
-            // todo: add dependencies to module
-            self.moduleTest.addServiceDependencies(self.dependencies);
-            self.angularService = self.moduleTest.$injector.get(self.name);
-        }
-        ServiceTest.prototype.getService = function () {
+
+        ServiceTest.prototype.getService = function() {
             var self = this;
             if (!self.moduleTest.$injector.has(self.name)) return;
 
             // create stub services within the current module
-            _T.currentModule.module.config(function ($provide) {
-                $provide.provider('LoginSessionService', function () {
-                    this.$get = function () {
+            _T.currentModule.module.config(function($provide) {
+                $provide.provider('LoginSessionService', function() {
+                    this.$get = function() {
                         return {
                             LoginSessionService: {
-                                CurrentSession: function () { return 12; }
+                                CurrentSession: function() {
+                                    return 12;
+                                }
                             }
                         };
                     };
                 });
             });
-
-
-
-
 
 
 
@@ -511,10 +427,10 @@
 
             self.service = _T.$injector.get(self.name);
         }
-        ServiceTest.prototype.describeCallHttp = function (options, test) {
+        ServiceTest.prototype.describeCallHttp = function(options, test) {
             var self = this;
-            describe(self.name + ' Http Post Method', function () {
-                beforeEach(function () {
+            describe(self.name + ' Http Post Method', function() {
+                beforeEach(function() {
                     self.getService();
                     self.httpResponse = getHttpResponse(options.method.name, data.method.params);
                 });
@@ -522,7 +438,7 @@
                 //    response.config.data
                 //            .should.be.eql(data.expected.request);
                 //});
-                it('Should return response payload', function () {
+                it('Should return response payload', function() {
                     if (data.expected.response === null) {
                         expect(self.httpResponse).to.be.null;
                     } else {
@@ -534,14 +450,35 @@
             });
             return this;
         }
-        ServiceTest.prototype.method = function (name, title) {
+        ServiceTest.prototype.method = function(name, title) {
             this.methods[name] = new Method(name, title);
             return this.methods[name];
         }
+
+
+
+        function createAngularService(self) {
+            if (!self.moduleTest.$injector.has(self.name)) {
+                throw new Texception('Cannot create service, it does not exist within the ' + module.name + ' module.');
+            };
+            // todo: add dependencies to module
+            addDependencies(self.dependencies);
+            self.angularService = self.moduleTest.$injector.get(self.name);
+        }
+
+        function addDependencies(hashMap) {
+            angular.forEach(hashMap,function(element) {
+                self.stubs[element] = _T.currentModule.stubData[element];
+                _T.currentModule.module.factory(element, function() {
+                    return self.stubs[element]
+                });
+            });
+        }
+
         function getHttpResponse(method, params) {
             var response;
             _T.currentService[method](params)
-                .then(function (data) {
+                .then(function(data) {
                     response = data;
                 });
             _T.$httpBackend.flush();
@@ -549,9 +486,9 @@
         }
 
         function httpServiceMethod(data) {
-            describe(data.method.name, function () {
+            describe(data.method.name, function() {
                 var response = null;
-                beforeEach(function () {
+                beforeEach(function() {
                     response = getHttpResponse(data.method.name, data.method.params);
                 });
 
@@ -559,7 +496,7 @@
                 //    response.config.data
                 //            .should.be.eql(data.expected.request);
                 //});
-                it('Should return response payload', function () {
+                it('Should return response payload', function() {
                     if (data.expected.response === null) {
                         expect(response).to.be.null;
                     } else {
@@ -578,7 +515,7 @@
      * @param {} name - the HTML tag name
      * @returns {} - the directive test object
      */
-    var Directive = function (name) {
+    var Directive = function(name) {
         base(this, name, name + ' Directive');
         this.attributes = {};
         this.html = null;
@@ -586,7 +523,7 @@
         this.scopeProperties = [];
         return this;
     }
-    Directive.prototype.compile = function () {
+    Directive.prototype.compile = function() {
         this.html = buildDomElement(this.name, this.attributes);
         if (!this.scope) this.getScope();
         this.getScopeProperties();
@@ -594,24 +531,24 @@
         this.compiledHtml = this.element.outerHTML;
         return this;
     }
-    Directive.prototype.withAttributes = function (attrs) {
+    Directive.prototype.withAttributes = function(attrs) {
         this.attributes = attrs;
         return this;
     }
-    Directive.prototype.withScopeProperties = function (properties) {
+    Directive.prototype.withScopeProperties = function(properties) {
         this.scopeProperties = properties;
         return this;
     }
-    Directive.prototype.getScopeProperties = function () {
+    Directive.prototype.getScopeProperties = function() {
         var self = this;
-        this.scopeProperties.forEach(function (property) {
+        this.scopeProperties.forEach(function(property) {
             self.scope[property.name] = property.value;
         });
     }
-    Directive.prototype.describe = function (test) {
+    Directive.prototype.describe = function(test) {
         var self = this;
-        describe(self.name + ' Directive', function () {
-            beforeEach(function () {
+        describe(self.name + ' Directive', function() {
+            beforeEach(function() {
                 _T.currentDirective = self;
                 self.getStubs();
             });
@@ -622,7 +559,7 @@
 
     function buildDomElement(name, attrs) {
         var html = '<' + name + ' ';
-        angular.forEach(attrs, function (attribute, key) {
+        angular.forEach(attrs, function(attribute, key) {
             if (!attribute.include) return;
             html += key + '="' + attribute.value + '" ';
         });
@@ -644,13 +581,13 @@
      *  This bind polyfill is copied directly from MDN
      *  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#Compatibility
      */
-    (function () {
+    (function() {
         if (Function.prototype.bind) {
             return;
         } // already defined
 
         /*jshint freeze: false */
-        Function.prototype.bind = function (oThis) {
+        Function.prototype.bind = function(oThis) {
             if (typeof this !== 'function') {
                 // closest thing possible to the ECMAScript 5
                 // internal IsCallable function
@@ -660,8 +597,8 @@
 
             var aArgs = Array.prototype.slice.call(arguments, 1),
                 fToBind = this,
-                FuncNoOp = function () { },
-                fBound = function () {
+                FuncNoOp = function() {},
+                fBound = function() {
                     return fToBind.apply(this instanceof FuncNoOp && oThis ? this : oThis,
                         aArgs.concat(Array.prototype.slice.call(arguments)));
                 };
@@ -677,8 +614,8 @@
      * taken and modified from: https://github.com/substantial/sinon-stub-promise/blob/master/index.js
      * @returns {} 
      */
-    (function (sinon) {
-        sinon.stub.returnsPromise = function () {
+    (function(sinon) {
+        sinon.stub.returnsPromise = function() {
             var self = this;
             self.resolved = false;
             self.resolves = resolves;
