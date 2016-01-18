@@ -20,65 +20,7 @@
         expectedData = {},
         dependantServices = {};
 
-    /** PRIVATE METHODS ****************************************************/
-
-    function addExpected(key, obj) {
-        expectedData[key] = obj;
-    }
-
-    function expected(key) {
-        return expectedData[key];
-    }
-
-    function addDependantService(key, obj) {
-        dependantServices[key] = obj;
-    }
-
-    function dependantService(key) {
-        return dependantServices[key];
-    }
-    /**
-     * return a data set as a promise, useful for stubs
-     * @param {} $q - angular's $q service
-     * @param {} data - the data to return within the promise
-     * @returns {} - a promise
-     */
-    function asPromise($q, data) {
-        var deferred = $q.defer();
-        deferred.resolve(data);
-        return sinon ? sinon.stub().returns(deferred.promise) : null;
-    }
-
-
-    /**
-     * After setup, run the specs
-     */
-    function run() {
-        // run mocha
-        mocha.run();
-
-        // before each spec setup common stuff
-        beforeEach(function() {
-            window._T = publicApi;
-        });
-
-        // and after each spec tear down
-        afterEach(function() {
-
-        });
-    }
-
-    /**
-     * check if a file exists at the passed url
-     * @param {} url - the url to check
-     * @returns {} - true if exists, else false
-     */
-    function urlExists(url) {
-        var http = new XMLHttpRequest();
-        http.open('HEAD', url, false);
-        http.send();
-        return http.status != 404;
-    }
+    
 
 
 
@@ -90,18 +32,19 @@
     var ModuleTest = (function() {
         /**
          * An angular module to test
-         * @param {} name - the angular module name
+         * @param {} name - The name of the angular module.
+         * @param {} title - (optional) A title to display when running tests under this module.
          * @returns {} - the module test object
          */
         var ModuleTest = function(name, title) {
             this.name = name;
             this.title = title || name + ' Module';
-            this.services = {};
             this.serviceTests = {};
-            this.controllers = {};
-            this.directives = {};
+            this.controllerTests = {};
+            this.directiveTests = {};
             this.module = null;
             this.injectedModules = {};
+
             this.$injector = null;
             this.$compile = null;
             this.$controller = null;
@@ -109,10 +52,12 @@
             this.$httpBackend = null;
             this.$q = null;
             this.$log = null;
+
             testsMixin(this);
             dependenciesMixin(this);
             return this;
         }
+
         ModuleTest.prototype.describe = function(test) {
                 var self = this;
                 describe(self.title, function() {
@@ -130,14 +75,16 @@
                 return self;
             }
 
-        ModuleTest.prototype.addController = function(name, title) {
-            this.controllers[name] = new Controller(this, name, title);
+        ModuleTest.prototype.createControllerTest = function(name, title) {
+            this.controllers[name] = new ControllerTest(this, name, title);
             return this.controllers[name];
         }
-        ModuleTest.prototype.addDirective = function(name, title) {
-            this.directives[name] = new Directive(this, name, title);
+
+        ModuleTest.prototype.createDirectiveTest = function(name, title) {
+            this.directives[name] = new DirectiveTest(this, name, title);
             return this.directives[name];
         }
+
         ModuleTest.prototype.createServiceTest = function(name, title) {
             this.serviceTests[name] = new ServiceTest(this, name, title);
             return this.serviceTests[name];
@@ -670,6 +617,67 @@
             return self;
         };
     }(sinon));
+
+    /** PRIVATE METHODS ****************************************************/
+
+    function addExpected(key, obj) {
+        expectedData[key] = obj;
+    }
+
+    function expected(key) {
+        return expectedData[key];
+    }
+
+    function addDependantService(key, obj) {
+        dependantServices[key] = obj;
+    }
+
+    function dependantService(key) {
+        return dependantServices[key];
+    }
+
+    /**
+     * return a data set as a promise, useful for stubs
+     * @param {} $q - angular's $q service
+     * @param {} data - the data to return within the promise
+     * @returns {} - a promise
+     */
+    function asPromise($q, data) {
+        var deferred = $q.defer();
+        deferred.resolve(data);
+        return sinon ? sinon.stub().returns(deferred.promise) : null;
+    }
+
+
+    /**
+     * After setup, run the specs
+     */
+    function run() {
+        // run mocha
+        mocha.run();
+
+        // before each spec setup common stuff
+        beforeEach(function () {
+            window._T = publicApi;
+        });
+
+        // and after each spec tear down
+        afterEach(function () {
+
+        });
+    }
+
+    /**
+     * check if a file exists at the passed url
+     * @param {} url - the url to check
+     * @returns {} - true if exists, else false
+     */
+    function urlExists(url) {
+        var http = new XMLHttpRequest();
+        http.open('HEAD', url, false);
+        http.send();
+        return http.status != 404;
+    }
 
     /**
      * Given a DOM element, get an array of child nodes of a given localName
