@@ -1,9 +1,9 @@
     var LOGGING_MODULE_NAME = 's.logging',
         LOGGING_SERVICE_NAME = 'loggingService',
-        LOGGING_DEBUG_ENABLED_CONSTANT = 'loggingDebugEnabled';
+        LOGGING_DEBUG_ENABLED_CONSTANT = 'loggingDebugEnabled',
 
     //      test data
-    var message = '854b61fb-5ed1-4bfc-99e5-02e82ed982be',
+        message = '854b61fb-5ed1-4bfc-99e5-02e82ed982be',
         data = 'e19b6257-70a9-4ffb-9128-2b948135eb17',
         source = '40f51c9d-a654-4c1a-9a32-2b920068c3b7';
 

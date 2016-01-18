@@ -5,7 +5,6 @@
         .constant('loggingDebugEnabled', true)
 		.factory('loggingService', loggingService);
 
-
     config.$inject = ['$logProvider', 'loggingDebugEnabled'];
     function config($logProvider, loggingDebugEnabled) {
         $logProvider.debugEnabled(loggingDebugEnabled);
