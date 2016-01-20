@@ -22,7 +22,7 @@
             }
         })
         //.config(moduleConfig)
-        .service('s.person.controller.resolver', PersonResolver);
+        .factory('s.person.controller.resolver', PersonResolver);
       //  .controller('sPerson', PersonController);
 
     /**
