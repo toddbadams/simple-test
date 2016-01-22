@@ -1,22 +1,25 @@
 ﻿(function () {
-    var TEMPLATE_BASE_URL = '/samples/controllers/templates';
+    'use strict';
+
+    var TEMPLATE_BASE_URL = '/samples/controllers/';
 
     angular.module('s.person.controller', [
             'ui.router',
             's.logging',
             's.data'
-    ])
+        ])
         .constant('s.person.controller.config', {
             route: {
-                name: 's.person',
+                name: 'person',
                 state: {
                     url: '/person',
                     templateUrl: TEMPLATE_BASE_URL + 'person.html',
-                    controller: 'sPerson',
+                    controller: PersonController,
+                    //controller: 'sPerson',
                     controllerAs: "vm",
                     resolve:
                     {
-                        data: 's.person.controller.resolver'
+                        data: PersonResolver
                     }
                 }
             }
@@ -28,24 +31,24 @@
     /**
      * Person controller route configuration
      */
-    moduleConfig.$inject = [ 's.person.controller.config'];  //'$stateProvider',
-    function moduleConfig(config) { // $stateProvider,
-       // $stateProvider.state(config.route.name, config.route.state);
-       // $stateProvider.state(config.route.name, config.route.state);
+    moduleConfig.$inject = ['$stateProvider', '$urlRouterProvider', 's.person.controller.config'];  
+    function moduleConfig($stateProvider, $urlRouterProvider, config) {  
+        //$urlRouterProvider.otherwise("/person");
+        $stateProvider.state(config.route.name, config.route.state);
     }
 
     /**
      * Person controller data resolver
      */
-    PersonResolver.$inject = ['personDataService'];
+    PersonResolver.$inject = ['dataService'];
     function PersonResolver(personDataService) {
-        return personDataService.get();
+        return personDataService.getPerson(1);
     }
 
     /**
      * Person controller
      */
-    PersonController.$inject = ['loggingService', 'personDataService', 'data'];
+    PersonController.$inject = ['loggingService', 'dataService', 'data'];
     function PersonController(loggingService, personDataService, personData) {
         var vm = this,
             logger = loggingService.logger('person');

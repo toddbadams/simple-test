@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('s.logging', ['ng'])
+    angular.module('s.logging', ['ng', 'toaster', 'ngAnimate'])
         .config(config)
         .constant('loggingDebugEnabled', true)
 		.factory('loggingService', loggingService);
@@ -28,7 +28,12 @@
                 source: source
             });
             // send message to toaster
-            toaster[method](message);
+            toaster.pop({
+                type: method,
+                title: source,
+                body: message,
+                showCloseButton: true
+            });
         }
 
         function logger(source) {
