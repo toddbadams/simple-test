@@ -4,7 +4,7 @@
     angular.module('s.person.controller', [
             'ui.router',
             's.logging',
-            's.person.data'
+            's.data'
     ])
         .constant('s.person.controller.config', {
             route: {
@@ -21,12 +21,12 @@
                 }
             }
         })
-        //.config(moduleConfig)
-        .factory('s.person.controller.resolver', PersonResolver);
-      //  .controller('sPerson', PersonController);
+        .config(moduleConfig)
+        .factory('s.person.controller.resolver', PersonResolver)
+        .controller('sPerson', PersonController);
 
     /**
-     * Module configuration
+     * Person controller route configuration
      */
     moduleConfig.$inject = ['stateProvider', 's.person.controller.config'];
     function moduleConfig($stateProvider, config) {

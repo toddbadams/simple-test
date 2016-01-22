@@ -6,13 +6,12 @@ var
 
 _T.createModuleTest('s.data')
         .describe(function () {
-            var dataModule = this;
             this.createServiceTest('dataService')
                 .describe(function () {
                     var dataServiceTest = this,
                         result;
 
-                    describe('createPerson', function () {
+                    describe('The create method', function () {
                         beforeEach(function () {
                             result = dataServiceTest.angularService.createPerson({
                                 first: first,
@@ -31,7 +30,7 @@ _T.createModuleTest('s.data')
                         });
                     });
 
-                    describe('getPerson', function () {
+                    describe('The get method', function () {
                         beforeEach(function () {
                             result = dataServiceTest.httpMethod('getPerson', id, {
                                 method: 'GET',
@@ -54,8 +53,7 @@ _T.createModuleTest('s.data')
                         });
                     });
 
-
-                    describe('updatePerson', function () {
+                    describe('The update method', function () {
                         beforeEach(function () {
                             var p = dataServiceTest.angularService.createPerson({
                                 first: first,

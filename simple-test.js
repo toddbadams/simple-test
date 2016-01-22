@@ -37,7 +37,9 @@
             this.directiveTests = {};
             this.angularModule = null;
             this.injectedModules = {};
-            this.dependencies = [];
+            this.moduleDependencies = [];
+            this.providerDependencies = [];
+            this.serviceDependencies = [];
 
             this.$injector = null;
             this.$compile = null;
@@ -83,20 +85,31 @@
             return this.serviceTests[name];
         }
 
+        test.prototype.injectModule = function (name) {
+            this.moduleDependencies.push(new ModuleDependency(name, this));
+            return this;
+        }
+
         test.prototype.injectProvider = function (dependencyModel) {
-            this.dependencies.push(new ProviderDependency(dependencyModel, this));
+            this.providerDependencies.push(new ProviderDependency(dependencyModel, this));
             return this;
         }
 
         test.prototype.injectService = function (dependencyModel) {
-            this.dependencies.push(new ServiceDependency(dependencyModel, this));
+            this.serviceDependencies.push(new ServiceDependency(dependencyModel, this));
             return this;
         }
 
         function setupAngularModule(self) {
-            angular.mock.module(self.name);
-            createDependancies(self.dependencies);
+            // first inject dependent modules
+            createDependancies(self.moduleDependencies);
+            // second create the module under test as a mock
+            angular.mock.module.apply(this, createModuleMockParams(self));
             self.angularModule = angular.module(self.name);
+            // third create anonymous (no module) providers
+            //createDependancies(self.providerDependencies, $provide);
+            // finially create anonymous (no module) services
+            createDependancies(self.serviceDependencies);
             inject(function ($injector) {
                 self.$injector = $injector;
                 self.$compile = $injector.get('$compile');
@@ -107,6 +120,15 @@
                 self.$log = $injector.get('$log');
             });
 
+        }
+
+        function createModuleMockParams(moduleTest) {
+            var arr = [];
+            arr.push(moduleTest.name);
+            moduleTest.providerDependencies.forEach(function(dep) {
+                arr.push(dep.providerFn);
+            });
+            return arr;
         }
 
         function tearDownAngularModule(self) {
@@ -153,7 +175,7 @@
         }
 
         test.prototype.injectService = function (dependencyModel) {
-            this.moduleTest.dependencies.push(new ServiceDependency(dependencyModel, this));
+            this.moduleTest.serviceDependencies.push(new ServiceDependency(dependencyModel, this));
             return this;
         }
 
@@ -163,7 +185,7 @@
             // mocks the backend response
             self.moduleTest.$httpBackend
                 .when(options.method, options.url)
-                .respond(function() {
+                .respond(function () {
                     return [200, options.response];
                 });
 
@@ -171,13 +193,13 @@
             if (angular.isArray(params)) {
                 // params is an array of parameters to pass to the method, use apply()
                 self.angularService[method].apply(self.angularService, params)
-                    .then(function(data) {
+                    .then(function (data) {
                         result = data;
                     });
             } else {
                 // params is a single parameter, send it to the method
                 self.angularService[method](params)
-                    .then(function(data) {
+                    .then(function (data) {
                         result = data;
                     });
             }
@@ -363,6 +385,25 @@
         }).bind(obj);
     }
 
+    /**
+     * A dependent module
+     */
+    var ModuleDependency = (function () {
+
+        var dependency = function (name, moduleTest) {
+            this.name = name;
+            this.moduleTest = moduleTest;
+            return this;
+        }
+        dependency.prototype.inject = function () {
+            // todo: should be able to use angular.mock.module(this.name)
+            // todo:    however it does not appear to setup the module, WHY?
+            angular.module(this.name, []);
+            return this;
+        }
+        return dependency;
+
+    })();
 
     /**
      * A dependent service
@@ -395,40 +436,26 @@
      */
     var ProviderDependency = (function () {
 
-        var dependency = function (model) {
-            if (!model.hasOwnProperty('module')) {
-                throw new Texception('Cannot create dependency, must have module property.');
-            }
-            this.moduleName = model.module;
-            if (!model.hasOwnProperty('provider')) {
+        var dependency = function (model, moduleTest) {
+            var self = this;
+            if (!model.hasOwnProperty('name')) {
                 throw new Texception('Cannot create dependency, must have provider property.');
             }
-            this.providerName = model.provider;
+            self.name = model.name;
             if (!model.hasOwnProperty('value')) {
                 throw new Texception('Cannot create dependency, must have value property.');
             }
-            this.value = model.value;
-            return this;
-        }
-        dependency.prototype.inject = function () {
-            var self = this;
-            try {
-                // module currently exists
-                this.module = angular.module(this.moduleName);
-            } catch (err) {
-                // module does not exists, so create it
-                this.module = angular.module(this.moduleName, []);
+            self.value = model.value;
+            if (!moduleTest) {
+                throw new Texception('Cannot create dependency, must have valid module test.');
             }
-
-            self.provider = this.module.provider(this.providerName, function () {
-                this.$get = function () {
-                    return self.value;
-                }
-            });
+            self.moduleTest = moduleTest;
+            this.providerFn = function($provide) {
+                self.provider = $provide.value(self.name, self.value);
+            };
             return this;
         }
         return dependency;
-
     })();
 
 
@@ -630,10 +657,10 @@
     }
 
 
-    function createDependancies(dependencies) {
+    function createDependancies(dependencies, $provide) {
         if (!dependencies || dependencies.length < 1) return;
         dependencies.forEach(function (dependency) {
-            dependency.inject();
+            dependency.inject($provide);
         });
     }
 
