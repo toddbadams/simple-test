@@ -125,15 +125,15 @@
         function createModuleMockParams(moduleTest) {
             var arr = [];
             arr.push(moduleTest.name);
-            moduleTest.providerDependencies.forEach(function(dep) {
+            moduleTest.providerDependencies.forEach(function (dep) {
                 arr.push(dep.providerFn);
             });
             return arr;
         }
 
         function tearDownAngularModule(self) {
-            if (self.$log.debug.logs.length > 1) console.log('debug: ' + self.$log.debug.logs);
-            if (self.$log.error.logs.length > 1) console.log('error: ' + self.$log.error.logs);
+            if (self.$log && self.$log.debug.logs.length > 1) console.log('debug: ' + self.$log.debug.logs);
+            if (self.$log && self.$log.error.logs.length > 1) console.log('error: ' + self.$log.error.logs);
         }
 
         return test;
@@ -246,9 +246,9 @@
             this.moduleTest = moduleTest;
             this.name = name;
             this.title = title || name + ' Controller';
-            this.dependencies = [];
+            this.serviceDependencies = [];
+            this.scope = null;
             testsMixin(this);
-            scopeMixin(this);
             this.controllerAsName = null;
             return this;
         }
@@ -266,25 +266,38 @@
                 it('Should have a scope', function () {
                     self.scope.should.exist;
                 });
+                if (self.controllerAsName) {
+                    it('Should have a view model named "' + self.controllerAsName + '" on the scope', function () {
+                        self.scope[self.controllerAsName].should.exist;
+                    });
+                }
                 if (test) self.addTest(test)();
             });
             return this;
         }
 
         test.prototype.injectService = function (dependencyModel) {
-            this.dependencies.push(new ServiceDependency(dependencyModel, this));
+            this.serviceDependencies.push(new ServiceDependency(dependencyModel, this));
             return this;
         }
 
 
         function createAngularController(self) {
-            self.createScope();
-            createDependancies(self.dependencies);
-            self.angularController = self.module.$controller(self.name);
+            self.scope = self.moduleTest.$rootScope.$new();
+            var f = createDependencies(self.serviceDependencies);
+            self.angularController = self.moduleTest.$controller(self.name, f);
             // if defined as controllerAs, then assign the angular controller on the scope
             if (self.controllerAsName && self.scope) {
                 self.scope[self.controllerAsName] = self.angularController;
             }
+        }
+
+        function createDependencies(serviceDependencies) {
+            var dependencies = {};
+            serviceDependencies.forEach(function (dep) {
+                dependencies[dep.serviceName] = dep.value;
+            });
+            return dependencies;
         }
 
         return test;
@@ -378,7 +391,7 @@
          * @returns {} - self
          */
         obj.createScope = (function () {
-            obj.scope = obj.module.$rootScope.$new();
+            obj.scope = obj.moduleTest.$rootScope.$new();
             // if our object has dependencies then add the scope as a dependency
             if (obj.dependencies) obj.dependencies['$scope'] = obj.scope;
             return obj;
@@ -450,7 +463,7 @@
                 throw new Texception('Cannot create dependency, must have valid module test.');
             }
             self.moduleTest = moduleTest;
-            this.providerFn = function($provide) {
+            this.providerFn = function ($provide) {
                 self.provider = $provide.value(self.name, self.value);
             };
             return this;
@@ -481,6 +494,7 @@
         }).bind(obj);
     }
 
+    // todo: directive not yet fully implemented.
     /**
      * An angular directive to test
      * @param {} name - the HTML tag name

@@ -28,9 +28,10 @@
     /**
      * Person controller route configuration
      */
-    moduleConfig.$inject = ['stateProvider', 's.person.controller.config'];
-    function moduleConfig($stateProvider, config) {
-        $stateProvider.state(config.route.name, config.route.state);
+    moduleConfig.$inject = [ 's.person.controller.config'];  //'$stateProvider',
+    function moduleConfig(config) { // $stateProvider,
+       // $stateProvider.state(config.route.name, config.route.state);
+       // $stateProvider.state(config.route.name, config.route.state);
     }
 
     /**

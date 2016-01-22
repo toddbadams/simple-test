@@ -1,7 +1,7 @@
 ﻿
 myModuleRun.$inject = ['$state'];
 function myModuleRun($stateProvider) {
-    console.log($stateProvider);
+    console.log('$stateProvider = ',$stateProvider);
 };
 
 angular.module('myModule', ['someOtherModule'])
