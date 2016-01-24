@@ -33,7 +33,6 @@
      */
     moduleConfig.$inject = ['$stateProvider', '$urlRouterProvider', 's.person.controller.config'];  
     function moduleConfig($stateProvider, $urlRouterProvider, config) {  
-        //$urlRouterProvider.otherwise("/person");
         $stateProvider.state(config.route.name, config.route.state);
     }
 
@@ -59,7 +58,7 @@
 
         function save() {
             vm.isSaving = true;
-            personDataService.save(vm.person)
+            personDataService.updatePerson(vm.person)
                 .then(postSave);
         }
 

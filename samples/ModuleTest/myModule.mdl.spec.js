@@ -1,6 +1,6 @@
 _T.createModuleTest('myModule')
     .injectModule('someOtherModule')
-    .injectProvider({ name: '$state', value: true })
+    .injectService({ name: '$state', value: true })
     .describe(function () {
         var myModuleTest = this;
         it('mySpecialObject should have id of 123', function () {

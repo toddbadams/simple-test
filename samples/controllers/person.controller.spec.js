@@ -14,28 +14,21 @@
         $stateProvider = function () { return sinon.stub() },
         personData = '570f528c-1e3d-48cd-b8c4-0dca27f91159',
         personDataService = {
-            save: sinon.stub().returnsPromise(),
-            get: sinon.stub().returnsPromise().resolves(personData)
+            updatePerson: sinon.stub().returnsPromise(),
+            getPerson: sinon.stub().returnsPromise().resolves(personData)
         },
     controller,
     vm;
 
     _T.createModuleTest('s.person.controller')
-        .injectModule('ui.router')
         .injectModule('s.logging')
         .injectModule('s.data')
         .injectProvider({ name: '$state', value: $stateProvider })
         .describe(function () {
             var moduleTest = this;
 
-            xit('Should set the person route.', function () {
-                var config = moduleTest.$injector.get('s.person.controller.config'),
-                    uut = moduleTest.$injector.get('$stateProvider');
-                uut.state.should.have.been.calledWith(config.route.name, config.route.state);
-            });
-
             this.createServiceTest('s.person.controller.resolver')
-                .injectService({ name: 'personDataService', value: personDataService })
+                .injectService({ name: 'dataService', value: personDataService })
                 .describe(function () {
                     var uut = this;
 
@@ -70,14 +63,14 @@
                             vm.isSaving.should.be.true;
                         });
                         it('Should save the person', function () {
-                            personDataService.save
+                            personDataService.updatePerson
                                 .should.be.calledWith(personData);
                         });
                     });
 
                     describe('On save success', function () {
                         beforeEach(function () {
-                            personDataService.save.resolves();
+                            personDataService.updatePerson.resolves();
                             vm.save();
                         });
                         it('Should hide the "saving..." message', function () {

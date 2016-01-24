@@ -1,13 +1,21 @@
 ﻿(function () {
     'use strict';
-    myModuleRun.$inject = ['$state'];
-    function myModuleRun($stateProvider) {
+
+    myModuleConfig.$inject = ['$stateProvider'];
+    function myModuleConfig($stateProvider) {
         console.log('$stateProvider = ', $stateProvider);
     };
 
-    angular.module('myModule', ['someOtherModule'])
+
+    myModuleRun.$inject = ['$state'];
+    function myModuleRun($state) {
+        console.log('$state = ', $state);
+    };
+
+    angular.module('myModule', ['ui.router', 'someOtherModule'])
         .value('mySpecialObject', { id: 123 })
         .constant('myConstant', 456)
+        .config(myModuleConfig)
         .run(myModuleRun);
 
 })();

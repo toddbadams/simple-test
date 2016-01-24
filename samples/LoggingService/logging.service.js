@@ -17,8 +17,8 @@
     /**
      * The logging service
      */
-    loggingService.$inject = ['$log','toaster'];
-    function loggingService($log, toaster) {
+    loggingService.$inject = ['$log', 'toaster', 'loggingDebugEnabled'];
+    function loggingService($log, toaster, debugEnabled) {
 
         function log(method, message, data, source) {
             // log to angular
@@ -28,12 +28,14 @@
                 source: source
             });
             // send message to toaster
-            toaster.pop({
-                type: method,
-                title: source,
-                body: message,
-                showCloseButton: true
-            });
+            if(debugEnabled){
+                toaster.pop({
+                    type: method,
+                    title: source,
+                    body: message,
+                    showCloseButton: true
+                });
+            }
         }
 
         function logger(source) {
