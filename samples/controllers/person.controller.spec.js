@@ -23,7 +23,7 @@
     _T.createModuleTest('s.person.controller')
         .injectModule('s.logging')
         .injectModule('s.data')
-        .injectProvider({ name: '$state', value: $stateProvider })
+        .injectService({ name: '$state', value: $stateProvider })
         .describe(function () {
             var moduleTest = this;
 
