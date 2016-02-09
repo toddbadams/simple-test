@@ -1,5 +1,5 @@
 # simple-test
-**Simple Test provides simplied angular unit testing, and is a work in progress.  Coming soon...**
+**Simple Test provides simplied angular unit testing.**
 
 
 
