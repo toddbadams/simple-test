@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
     <title>Simple Angular Unit Test</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/bower_components/mocha/mocha.css" />
+    <link rel="stylesheet" href="/samples/bower_components/mocha/mocha.css" />
     <link href="/simple-test.css" rel="stylesheet" />
 </head>
 
@@ -13,13 +13,13 @@
     <div id="mocha"></div>
 
     <!-- JS test frameworks -->
-    <script src="/bower_components/angular/angular.js"></script>
-    <script src="/bower_components/angular-animate/angular-animate.js"></script>
-    <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="/bower_components/angularJS-Toaster/toaster.js"></script>
-    <script src="/bower_components/mocha/mocha.js"></script>
-    <script src="/bower_components/chai/chai.js"></script>
-    <script src="/bower_components/sinon/index.js"></script>
+    <script src="/samples/bower_components/angular/angular.js"></script>
+    <script src="/samples/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="/samples/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="/samples/bower_components/angularJS-Toaster/toaster.js"></script>
+    <script src="/samples/bower_components/mocha/mocha.js"></script>
+    <script src="/samples/bower_components/chai/chai.js"></script>
+    <script src="/samples/bower_components/sinon/index.js"></script>
     <script>
         // mocha setup
         mocha.setup('bdd');
@@ -29,23 +29,23 @@
         window.AssertionError = chai.AssertionError;
         chai.should();
     </script>
-    <script src="/bower_components/angular-mocks/angular-mocks.js"></script>
-    <script src="/bower_components/sinon-chai/lib/sinon-chai.js"></script>
+    <script src="/samples/bower_components/angular-mocks/angular-mocks.js"></script>
+    <script src="/samples/bower_components/sinon-chai/lib/sinon-chai.js"></script>
     <script src="/simple-test.js"></script>
 
-    <script type="text/javascript" src="samples/DataService/data.service.js"></script>
-    <script type="text/javascript" src="samples/LoggingService/logging.service.js"></script>
-    <script type="text/javascript" src="samples/ModuleTest/myModule.mdl.js"></script>
-    <script type="text/javascript" src="samples/controllers/person.controller.js"></script>
-    <script type="text/javascript" src="samples/directives/person.directive.js"></script>
-    <script type="text/javascript" src="samples/sample.backend.mdl.js"></script>
-    <script type="text/javascript" src="samples/sample.mdl.js"></script>
+    <script type="text/javascript" src="/samples/DataService/data.service.js"></script>
+    <script type="text/javascript" src="/samples/LoggingService/logging.service.js"></script>
+    <script type="text/javascript" src="/samples/ModuleTest/myModule.mdl.js"></script>
+    <script type="text/javascript" src="/samples/controllers/person.controller.js"></script>
+    <script type="text/javascript" src="/samples/directives/person.directive.js"></script>
+    <script type="text/javascript" src="/samples/sample.backend.mdl.js"></script>
+    <script type="text/javascript" src="/samples/sample.mdl.js"></script>
 
-    <script type="text/javascript" src="samples/DataService/data.service.spec.js"></script>
-    <script type="text/javascript" src="samples/LoggingService/logging.service.spec.js"></script>
-    <script type="text/javascript" src="samples/ModuleTest/myModule.mdl.spec.js"></script>
-    <script type="text/javascript" src="samples/controllers/person.controller.spec.js"></script>
-    <!-- JS specifications (tests) -->
+    <script type="text/javascript" src="/samples/DataService/data.service.spec.js"></script>
+    <script type="text/javascript" src="/samples/LoggingService/logging.service.spec.js"></script>
+    <script type="text/javascript" src="/samples/ModuleTest/myModule.mdl.spec.js"></script>
+    <script type="text/javascript" src="/samples/controllers/person.controller.spec.js"></script>
+    <script type="text/javascript" src="/samples/directives/person.directive.spec.js"></script>
 
     <script>
         _T.run();

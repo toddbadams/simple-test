@@ -10,13 +10,17 @@
     function PersonDirective() {
         return {
             restrict: 'E',
+            scope: {
+                ngModel: '=',
+                ngChange: '@'
+            },
             require: 'ngModel',
             templateUrl: TEMPLATE_BASE_URL + 'person.html',
             link: link
         };
 
-        function link(scope, element, attr) {
-            
+        function link(scope, element, attrs) {
+            var f = 12;
         }
     }
 })();

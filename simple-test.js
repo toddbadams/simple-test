@@ -47,6 +47,7 @@
             this.$httpBackend = null;
             this.$q = null;
             this.$log = null;
+            this.$templateCache = null;
 
             testsMixin(this);
             return this;
@@ -74,9 +75,9 @@
             return this.controllerTests[name];
         }
 
-        test.prototype.createDirectiveTest = function (name, title) {
-            this.directivesTests[name] = new DirectiveTest(this, name, title);
-            return this.directivesTests[name];
+        test.prototype.createDirectiveTest = function (name, attributes, title) {
+            this.directiveTests[name] = new DirectiveTest(this, name, attributes, title);
+            return this.directiveTests[name];
         }
 
         test.prototype.createServiceTest = function (name, title) {
@@ -111,6 +112,7 @@
                 self.$httpBackend = $injector.get('$httpBackend');
                 self.$q = $injector.get('$q');
                 self.$log = $injector.get('$log');
+                self.$templateCache = $injector.get('$templateCache');
             });
 
         }
@@ -276,6 +278,110 @@
 
         return test;
     })();
+
+
+
+    /**
+     * The DirectiveTest Object
+     */
+    var DirectiveTest = (function () {
+        /**
+         * An angular directive under test
+         * @param {} module - the angular module that contains the directive
+         * @param {} name - the angular directive
+         * @returns {} - the directive test object
+         */
+        var test = function (moduleTest, name, attributes, title) {
+            this.angularDirective = null;
+            this.moduleTest = moduleTest;
+            this.name = name;
+            this.attributes = attributes;
+            this.title = title || name + ' Directive';
+            this.dependencies = [];
+            testsMixin(this);
+            return this;
+        }
+
+        test.prototype.withTemplateUrl = function (templateUrl) {
+            this.templateUrl = templateUrl;
+            return this;
+        }
+
+
+        test.prototype.withParentScope = function (parentScopeObj) {
+            this.parentScopeObj = parentScopeObj;
+            return this;
+        }
+
+        test.prototype.describe = function (test) {
+            var self = this;
+            describe(self.title, function () {
+                beforeEach(function () {
+                    createAngularDirective(self);
+                });
+                it('Should have a parent scope ', function () {
+                    self.parentScope.should.exist;
+                });
+                it('Should have a scope ', function () {
+                    self.scope.should.exist;
+                });
+                if (test) self.addTest(test)();
+            });
+            return this;
+        }
+
+        test.prototype.injectService = function (dependencyModel) {
+            this.moduleTest.serviceDependencies.push(new ServiceDependency(dependencyModel, this));
+            return this;
+        }
+
+        function createAngularDirective(self) {
+            //if (!self.moduleTest.$injector.has(self.name)) {
+            //    throw new Texception('Cannot create service, it does not exist within the ' + module.name + ' module.');
+            //};
+            // parent scope
+            self.parentScope = self.moduleTest.$rootScope.$new();
+            angular.extend(self.parentScope, self.parentScopeObj);
+            // html text
+            self.html = createHtmlTag(self.name, self.attributes);
+            // allow http backend to access the template file
+            AddTemplateToCache(self);
+            // dom element
+            self.element = self.moduleTest.$compile(self.html)(self.parentScope);
+            // cycle the digest
+            self.parentScope.$digest();
+            // get the directive's scope
+            self.angularDirective = self.element.isolateScope();
+            self.scope = self.angularDirective;
+        }
+
+        function AddTemplateToCache(self) {
+            if (!self.templateUrl) return;
+            var directiveTemplate = null;
+            var req = new XMLHttpRequest();
+            req.onload = function () {
+                directiveTemplate = this.responseText;
+            };
+            // Note that the relative path may be different from your unit test HTML file.
+            // Using `false` as the third parameter to open() makes the operation synchronous.
+            // Gentle reminder that boolean parameters are not the best API choice.
+            req.open("get", self.templateUrl.unitTestPath, false);
+            req.send();
+            self.moduleTest.$templateCache.put(self.templateUrl.directivePath, directiveTemplate);
+        }
+        
+        function createHtmlTag(name, attributes) {
+            var html = '<' + name + ' ';
+            attributes.forEach(function(attr) {
+                html += attr.key + '="' + attr.value + '" ';
+            });
+            html += '></' + name + '>';
+            return html;
+        }
+
+        return test;
+    })();
+
 
     /**
      * A dependent module

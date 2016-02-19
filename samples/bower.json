@@ -1,6 +1,6 @@
 {
-  "name": "simple-tests",
-  "description": "Simplified angular unit test API",
+  "name": "simple-test demo",
+  "description": "Simplified angular unit test demo project",
   "main": "",
   "authors": [
     "Todd B. Adams <toddbadams@msn.com>"
@@ -24,7 +24,7 @@
     "sinon-chai": "https://github.com/domenic/sinon-chai.git"
   },
   "dependencies": {
-    "angular": "~1.4.8",
+    "angular": "^1.5.0",
     "angular-ui-router": "ui-router#~0.2.15",
     "AngularJS-Toaster": "angularjs-toaster#~1.0.0"
   }
