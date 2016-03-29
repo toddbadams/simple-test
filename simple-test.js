@@ -57,7 +57,12 @@
             var self = this;
             describe(self.title, function () {
                 beforeEach(function () {
-                    setupAngularModule(self);
+                    try {
+                        setupAngularModule(self);
+                    } catch (err) {
+                        console.log(err);
+                        throw err;
+                    }
                 });
                 afterEach(function () {
                     tearDownAngularModule(self);
@@ -150,7 +155,12 @@
             var self = this;
             describe(self.title, function () {
                 beforeEach(function () {
-                    createAngularService(self);
+                    try {
+                        createAngularService(self);
+                    } catch (err) {
+                        console.log(err);
+                        throw err;
+                    }
                 });
                 it('Should exist in module ' + self.moduleTest.name, function () {
                     self.moduleTest.$injector.has(self.name).should.be.true;
@@ -237,7 +247,12 @@
             var self = this;
             describe(self.title, function () {
                 beforeEach(function () {
-                    createAngularController(self);
+                    try {
+                        createAngularController(self);
+                    } catch (err) {
+                        console.log(err);
+                        throw err;
+                    }
                 });
                 it('Should have a scope', function () {
                     self.scope.should.exist;
