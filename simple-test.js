@@ -411,7 +411,12 @@
         dependency.prototype.inject = function () {
             // todo: should be able to use angular.mock.module(this.name)
             // todo:    however it does not appear to setup the module, WHY?
-            angular.module(this.name, []);
+            // only inject if it does not already exist
+            try {
+                angular.module(this.name);
+            } catch (err) {
+                angular.module(this.name, []);
+            }
             return this;
         }
         return dependency;
@@ -567,12 +572,7 @@
     function createDependancies(dependencies, $provide) {
         if (!dependencies || dependencies.length < 1) return;
         dependencies.forEach(function (dependency) {
-            // only inject if it does not already exist
-            try {
-                angular.module(dependency);
-            } catch (err) {
                 dependency.inject($provide);
-            }
         });
     }
 
