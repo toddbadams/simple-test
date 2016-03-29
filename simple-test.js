@@ -567,7 +567,12 @@
     function createDependancies(dependencies, $provide) {
         if (!dependencies || dependencies.length < 1) return;
         dependencies.forEach(function (dependency) {
-            dependency.inject($provide);
+            // only inject if it does not already exist
+            try {
+                angular.module(dependency);
+            } catch (err) {
+                dependency.inject($provide);
+            }
         });
     }
 
