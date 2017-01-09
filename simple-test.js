@@ -175,14 +175,15 @@
             return this;
         }
 
-        test.prototype.httpMethod = function (method, params, options) {
+        test.prototype.httpMethod = function (method, params, options, status) {
             var self = this,
                 result;
+            status = status || 200;
             // mocks the backend response
             self.moduleTest.$httpBackend
                 .when(options.method, options.url)
                 .respond(function () {
-                    return [200, options.response];
+                    return [status, options.response];
                 });
 
             // call the service method
